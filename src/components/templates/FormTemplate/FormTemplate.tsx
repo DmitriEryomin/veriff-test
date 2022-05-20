@@ -25,9 +25,9 @@ export const FormTemplate = () => {
   }, []);
 
   return isLoading ? (
-    <h1>Loading...</h1>
+    <h1 className={styles.title}>Loading form 🤩</h1>
   ) : hasError ? (
-    <h1>Error</h1>
+    <h1 className={styles.title}>Something went wrong 😞</h1>
   ) : (
     <div className={styles.container}>
       <VerificationForm formGroup={checks} />

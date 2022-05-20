@@ -5,8 +5,8 @@ import { FunctionComponent } from 'react';
 import styles from './Toggler.module.scss';
 
 interface TogglerProps {
-  disabled: boolean;
   value: boolean | null;
+  disabled: boolean;
   className?: string;
   acceptText?: string;
   declineText?: string;
@@ -58,6 +58,8 @@ Toggler.defaultProps = {
 Toggler.propTypes = {
   value: PropTypes.bool,
   disabled: PropTypes.bool.isRequired,
+  className: PropTypes.string,
   acceptText: PropTypes.string,
   declineText: PropTypes.string,
+  onToggle: PropTypes.func.isRequired,
 };

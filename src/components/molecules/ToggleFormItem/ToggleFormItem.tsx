@@ -12,19 +12,19 @@ interface Props {
   disabled: boolean;
   isActive: boolean;
   value: boolean | null;
-  onToggle: (key: string, value: boolean) => void;
+  onToggleClick: (key: string, value: boolean) => void;
 }
 
 export const ToggleFormItem: FunctionComponent<Props> = ({
   description,
-  onToggle,
+  onToggleClick,
   disabled,
   isActive,
   value,
   id,
 }) => {
   const handleToggle = (value: boolean) => {
-    onToggle(id, value);
+    onToggleClick(id, value);
   };
 
   return (
@@ -41,7 +41,10 @@ export const ToggleFormItem: FunctionComponent<Props> = ({
 };
 
 ToggleFormItem.propTypes = {
-  disabled: PropTypes.bool.isRequired,
-  value: PropTypes.bool,
   description: PropTypes.string.isRequired,
+  id: PropTypes.string.isRequired,
+  disabled: PropTypes.bool.isRequired,
+  isActive: PropTypes.bool.isRequired,
+  value: PropTypes.bool,
+  onToggleClick: PropTypes.func.isRequired,
 };

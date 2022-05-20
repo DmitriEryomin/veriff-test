@@ -1,5 +1,5 @@
 import { useFormik } from 'formik';
-import { FunctionComponent, useEffect, useState } from 'react';
+import { FunctionComponent, useState } from 'react';
 
 import {
   formValidator,
@@ -8,8 +8,10 @@ import {
   resultValuesMapper,
 } from 'services/form';
 import { submitCheckResults } from 'services/api';
+import { useArrows, useToggle } from 'hooks';
 import { Check, FormValues } from 'typings';
 import { Button } from 'components/atoms';
+import { ArrowKeys } from 'enums';
 
 import { ToggleFormItem } from '../../molecules';
 
@@ -22,6 +24,7 @@ interface VerificationFormProps {
 export const VerificationForm: FunctionComponent<VerificationFormProps> = ({
   formGroup,
 }) => {
+  const [feedback, setFeedback] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [activeForm, setActiveForm] = useState(formGroup[0]);
 
@@ -31,11 +34,12 @@ export const VerificationForm: FunctionComponent<VerificationFormProps> = ({
     validateOnMount: true,
     onSubmit: async (values) => {
       setIsLoading(true);
+      setFeedback('');
       try {
-        const result = await submitCheckResults(resultValuesMapper(values));
-        console.log(result);
+        await submitCheckResults(resultValuesMapper(values));
+        setFeedback('Your application successfully submitted 🥳');
       } catch (error) {
-        console.log(error);
+        setFeedback('Unable to submit the application 😞');
       } finally {
         setIsLoading(false);
       }
@@ -44,18 +48,23 @@ export const VerificationForm: FunctionComponent<VerificationFormProps> = ({
 
   const handleToggle = (id: string, value: boolean) => {
     if (!value) {
-      const newValues: FormValues = { ...form.values, [id]: value };
-      handleDeclineSelect(newValues);
+      handleDeclineSelect(id);
       return;
     }
-
     form.setFieldValue(id, value);
   };
 
-  const handleDeclineSelect = (values: FormValues) => {
+  const handleToggleClick = (id: string, value: boolean) => {
+    handleToggle(id, value);
+    const newActiveFormInd = formGroup.findIndex((form) => form.id === id);
+    setActiveForm(formGroup[newActiveFormInd]);
+  };
+
+  const handleDeclineSelect = (id: string) => {
+    const currentValues = { ...form.values, [id]: false };
     const newValues: FormValues = initialValuesMapper(formGroup);
 
-    for (const [key, value] of Object.entries(values)) {
+    for (const [key, value] of Object.entries(currentValues)) {
       newValues[key] = value;
       if (value === false) {
         break;
@@ -64,37 +73,41 @@ export const VerificationForm: FunctionComponent<VerificationFormProps> = ({
     form.setValues(newValues);
   };
 
-  const handleArrowPress = (key: 'ArrowDown' | 'ArrowUp') => {
-    console.log(key);
+  const handleArrows = (key: ArrowKeys) => {
+    const activeFormInd = formGroup.findIndex(
+      (form) => form.id === activeForm.id
+    );
+
+    if (key === ArrowKeys.UP && activeFormInd === 0) {
+      return;
+    }
+
+    if (key === ArrowKeys.DOWN && activeFormInd === formGroup.length - 1) {
+      return;
+    }
+
+    const { value } = form.getFieldProps(activeForm.id);
+
+    if (!value && key === ArrowKeys.DOWN) {
+      return;
+    }
+    const newActiveFormInd =
+      key === ArrowKeys.DOWN ? activeFormInd + 1 : activeFormInd - 1;
+    setActiveForm(formGroup[newActiveFormInd]);
   };
 
-  useEffect(() => {
-    document.addEventListener('keydown', ({ key }) => {
-      switch (key) {
-        case '1':
-          form.setFieldValue(activeForm.id, true);
-          break;
-        case '2':
-          form.setFieldValue(activeForm.id, false);
-          break;
-        case 'ArrowDown':
-        case 'ArrowUp':
-          handleArrowPress(key);
-          break;
-        default:
-          break;
-      }
-    });
-  }, []);
+  useToggle(handleToggle, activeForm, form.values);
+  useArrows(handleArrows, activeForm, form.values);
 
   return (
     <>
+      {feedback && <h2>{feedback}</h2>}
       {formGroup.map(({ id, description }, ind) => (
         <ToggleFormItem
           key={id}
           id={id}
           isActive={id === activeForm.id}
-          onToggle={handleToggle}
+          onToggleClick={handleToggleClick}
           description={description}
           value={form.values[id]}
           disabled={isDisabled(form.values, ind)}
