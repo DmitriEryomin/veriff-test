@@ -1,4 +1,6 @@
-export function fetchChecks() {
+import { Check, FormRequestItem } from 'typings';
+
+export function fetchChecks(): Promise<Check[]> {
   return new Promise((resolve, reject) =>
     setTimeout(
       () =>
@@ -31,12 +33,7 @@ export function fetchChecks() {
   );
 }
 
-/**
- * @param {Object[]} results - The list of check results
- * @param {string} results[].checkId - Check id
- * @param {string} results[].result - Result value (yes / no)
- */
-export function submitCheckResults(results: any) {
+export function submitCheckResults(results: FormRequestItem[]) {
   return new Promise((resolve, reject) =>
     setTimeout(
       () =>

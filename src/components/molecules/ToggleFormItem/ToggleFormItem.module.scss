@@ -1,0 +1,23 @@
+.item {
+  padding: 6px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  &:hover {
+    background-color: var(--hover-color);
+  }
+}
+
+.active {
+  background-color: var(--highlight-color);
+}
+
+.item label {
+  display: inline-block;
+  margin-bottom: 6px;
+}
+
+.disabled {
+  opacity: 0.2;
+  pointer-events: none;
+}

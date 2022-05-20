@@ -1,18 +1,36 @@
-import PropTypes from 'prop-types';
-import { FunctionComponent, ReactNode } from 'react';
+import { useEffect, useState } from 'react';
 
-import styles from './FormTemplate.module.css';
+import { VerificationForm } from 'components/organisms';
+import { fetchChecks } from 'services/api';
+import { Check } from 'typings';
 
-interface FormTemplateProps {
-  children: ReactNode;
-}
+import styles from './FormTemplate.module.scss';
 
-export const FormTemplate: FunctionComponent<FormTemplateProps> = ({
-  children,
-}) => {
-  return <div className={styles.container}>{children}</div>;
-};
+export const FormTemplate = () => {
+  const [checks, setChecks] = useState<Check[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
 
-FormTemplate.propTypes = {
-  children: PropTypes.node.isRequired,
+  useEffect(() => {
+    (async () => {
+      try {
+        const data = await fetchChecks();
+        setChecks(data);
+      } catch (error) {
+        setHasError(true);
+      } finally {
+        setIsLoading(false);
+      }
+    })();
+  }, []);
+
+  return isLoading ? (
+    <h1>Loading...</h1>
+  ) : hasError ? (
+    <h1>Error</h1>
+  ) : (
+    <div className={styles.container}>
+      <VerificationForm formGroup={checks} />
+    </div>
+  );
 };
