@@ -1,5 +1,5 @@
 import { useFormik } from 'formik';
-import { FunctionComponent, useState } from 'react';
+import { FunctionComponent, useEffect, useState } from 'react';
 
 import {
   formValidator,
@@ -23,6 +23,7 @@ export const VerificationForm: FunctionComponent<VerificationFormProps> = ({
   formGroup,
 }) => {
   const [isLoading, setIsLoading] = useState(false);
+  const [activeForm, setActiveForm] = useState(formGroup[0]);
 
   const form = useFormik({
     initialValues: initialValuesMapper(formGroup),
@@ -63,12 +64,36 @@ export const VerificationForm: FunctionComponent<VerificationFormProps> = ({
     form.setValues(newValues);
   };
 
+  const handleArrowPress = (key: 'ArrowDown' | 'ArrowUp') => {
+    console.log(key);
+  };
+
+  useEffect(() => {
+    document.addEventListener('keydown', ({ key }) => {
+      switch (key) {
+        case '1':
+          form.setFieldValue(activeForm.id, true);
+          break;
+        case '2':
+          form.setFieldValue(activeForm.id, false);
+          break;
+        case 'ArrowDown':
+        case 'ArrowUp':
+          handleArrowPress(key);
+          break;
+        default:
+          break;
+      }
+    });
+  }, []);
+
   return (
     <>
       {formGroup.map(({ id, description }, ind) => (
         <ToggleFormItem
           key={id}
           id={id}
+          isActive={id === activeForm.id}
           onToggle={handleToggle}
           description={description}
           value={form.values[id]}
