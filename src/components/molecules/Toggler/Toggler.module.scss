@@ -4,6 +4,8 @@
   border: none;
   padding: 4px;
   width: 50px;
+  cursor: pointer;
+  background-color: white;
   border: 1px solid var(--primary-color);
   &:disabled {
     color: black;

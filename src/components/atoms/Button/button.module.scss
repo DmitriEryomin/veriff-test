@@ -15,15 +15,13 @@
   padding: 0 16px;
   border-radius: 4px;
   cursor: pointer;
-}
-
-.button:disabled {
-  background-color: #e6ebf4;
-  color: #bdc0cf;
-  cursor: not-allowed;
-}
-
-.button:enabled:hover,
-.button:enabled:focus {
-  filter: brightness(110%);
+  &:disabled {
+    background-color: #e6ebf4;
+    color: #bdc0cf;
+    cursor: not-allowed;
+  }
+  &:enabled:hover,
+  &:enabled:focus {
+    filter: brightness(110%);
+  }
 }
